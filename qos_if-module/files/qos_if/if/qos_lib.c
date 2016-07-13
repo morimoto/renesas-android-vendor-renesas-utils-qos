@@ -14,12 +14,12 @@
 
 #include "qos_api_local.h"
 
+#define LOG_TAG "QOS-LIB"
+#include <cutils/log.h>
+
 /* #define QOS_DEBUG 1 */
 
 #define QOS_INDEX (512)
-
-#define ERR_PRINT(fmt, ...) \
-	printf("[Error] qos lib : %s : " fmt, __func__, ##__VA_ARGS__)
 
 struct qos_lib_handle {
 	int fd;
@@ -30,19 +30,19 @@ int qos_lib_init(unsigned long *handle)
 	struct qos_lib_handle *hdl;
 
 	if (handle == NULL) {
-		ERR_PRINT("invalid parameter\n");
+		ALOGE("invalid parameter\n");
 		return -1;
 	}
 
 	hdl = malloc(sizeof(*hdl));
 	if (!hdl) {
-		ERR_PRINT("allcate memory\n");
+		ALOGE("allcate memory\n");
 		return -1;
 	}
 
 	hdl->fd = open("/dev/"QOS_DEVICE_NAME, O_RDONLY | O_NONBLOCK);
 	if (hdl->fd == -1) {
-		ERR_PRINT("open %s\n", "/dev/"QOS_DEVICE_NAME);
+		ALOGE("open %s\n", "/dev/"QOS_DEVICE_NAME);
 		return -1;
 	}
 
@@ -71,7 +71,7 @@ int qos_lib_setall(unsigned long handle,
 	struct qos_ioc_set_all_qos_param all_qos_param;
 
 	if ((hdl == NULL) || (fix_qos == NULL) || (be_qos == NULL)) {
-		ERR_PRINT("invalid parameter\n");
+		ALOGE("%s: invalid parameter", __func__);
 		return -1;
 	}
 
@@ -82,9 +82,9 @@ int qos_lib_setall(unsigned long handle,
 
 	ret = ioctl(hdl->fd, QOS_IOCTL_SET_ALL_QOS, &all_qos_param);
 	if (ret != 0)
-		ERR_PRINT("ioctl(QOS_IOCTL_SET_ALL_QOS)\n");
+		ALOGE("%s: ioctl(QOS_IOCTL_SET_ALL_QOS) failed.", __func__);
 	else
-		puts("QoS : setall success!");
+		ALOGI("QoS : setall success!");
 
 	return ret;
 }
@@ -104,19 +104,19 @@ int qos_lib_setall_from_csv(unsigned long handle, char *read_file)
 	int index = 0;
 
 	if ((hdl == NULL) || (read_file == NULL)) {
-		ERR_PRINT("invalid parameter\n");
+		ALOGE("%s: invalid parameter", __func__);
 		return -1;
 	}
 
 	fp = fopen(read_file, "r");
 	if (fp == NULL) {
-		ERR_PRINT("open %s\n", read_file);
+		ALOGE("%s: open %s failed", __func__, read_file);
 		return -1;
 	}
 
 	if (fgets(buf, sizeof(buf), fp)) {
 		if (sscanf(buf, "ver %d.%d", &major, &minor) == 2) {
-			printf("QoS : CSV file ver %d.%d\n", major, minor);
+			ALOGI("QoS : CSV file ver %d.%d", major, minor);
 		} else {
 			rewind(fp);
 		}
@@ -137,12 +137,12 @@ int qos_lib_setall_from_csv(unsigned long handle, char *read_file)
 			;
 #endif
 		} else {
-			printf("data-format is wrong!\n");
+			ALOGW("%s: data-format is wrong!", __func__);
 		}
 #ifdef QOS_DEBUG
-		printf("index:%d\n", index);
-		printf(" FIX:0x%016llx BE:0x%016llx\n", fix_value, be_value);
-		printf(" FIX:%d %d BE:%d %d\n", fix_l, fix_band, be_l, be_band);
+		ALOGD("index:%d", index);
+		ALOGD(" FIX:0x%016llx BE:0x%016llx", fix_value, be_value);
+		ALOGD(" FIX:%d %d BE:%d %d", fix_l, fix_band, be_l, be_band);
 #endif
 		memcpy(fix_qos + (8 * index), &fix_value,
 			sizeof(unsigned long long));
@@ -166,13 +166,13 @@ int qos_lib_switch(unsigned long handle)
 	int ret;
 
 	if (hdl == NULL) {
-		ERR_PRINT("invalid parameter\n");
+		ALOGE("%s: invalid parameter", __func__);
 		return -1;
 	}
 
 	ret = ioctl(hdl->fd, QOS_IOCTL_SWITCH_MEMBANK, NULL);
 	if (ret != 0) {
-		ERR_PRINT("ioctl(QOS_IOCTL_SWITCH_MEMBANK)\n");
+		ALOGE("%s: ioctl(QOS_IOCTL_SWITCH_MEMBANK) failed.", __func__);
 		return -1;
 	}
 
