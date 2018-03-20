@@ -14,13 +14,13 @@ static void exec_interactive(void);
 static void exec_noninteractive(int argc, char *argv[]);
 
 static int exec_help(int argc, char *argv[]);
-static int exec_status(int argc, char *argv[]);
+//static int exec_status(int argc, char *argv[]);
 static int exec_set_all(int argc, char *argv[]);
-static int exec_set_ip(int argc, char *argv[]);
+//static int exec_set_ip(int argc, char *argv[]);
 static int exec_switch_membank(int argc, char *argv[]);
-static int exec_start(int argc, char *argv[]);
-static int exec_stop(int argc, char *argv[]);
-static int exec_get_ip(int argc, char *argv[]);
+//static int exec_start(int argc, char *argv[]);
+//static int exec_stop(int argc, char *argv[]);
+//static int exec_get_ip(int argc, char *argv[]);
 static int exec_exit(int argc, char *argv[]);
 
 static void get_input(char *buf, unsigned int size);
@@ -77,7 +77,7 @@ int main(int argc, char *argv[])
 
 static void exec_interactive(void)
 {
-	unsigned char cmd[256] = {};
+	char cmd[256] = {};
 	int argc = 0;
 	char *argv[256] = {};
 	int cmd_type;
@@ -132,7 +132,8 @@ static void exec_noninteractive(int argc, char *argv[])
 	}
 }
 
-static int exec_help(int argc, char *argv[])
+static int exec_help(int argc __attribute__((unused)),
+                     char *argv[] __attribute__((unused)))
 {
 	printf("Command Usage:\n");
 	printf("\thelp\t: Display this usage.\n");
@@ -145,7 +146,7 @@ static int exec_help(int argc, char *argv[])
 
 static int exec_set_all(int argc, char *argv[])
 {
-	unsigned char read_file[64] = {0};
+	char read_file[64] = {0};
 
 	if (argc == 1) {
 		printf("Please input parameters...\n");
@@ -163,12 +164,14 @@ static int exec_set_all(int argc, char *argv[])
 	return qos_lib_setall_from_csv(qos_handle, read_file);
 }
 
-static int exec_switch_membank(int argc, char *argv[])
+static int exec_switch_membank(int argc __attribute__((unused)),
+                               char *argv[] __attribute__((unused)))
 {
 	return qos_lib_switch(qos_handle);
 }
 
-static int exec_exit(int argc, char *argv[])
+static int exec_exit(int argc __attribute__((unused)),
+                     char *argv[] __attribute__((unused)))
 {
 	cmd_loop = 0;
 
