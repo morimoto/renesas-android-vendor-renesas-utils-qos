@@ -15,7 +15,7 @@
 #include "qos_api_local.h"
 
 #define LOG_TAG "QOS-LIB"
-#include <cutils/log.h>
+#include <log/log.h>
 
 /* #define QOS_DEBUG 1 */
 
